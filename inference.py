@@ -100,9 +100,9 @@ class DiscreteDistribution(dict):
         >>> round(samples.count('d') * 1.0/N, 1)
         0.0
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        self.normalize()
+        choice = random.choices(list(self.keys()), weights=list(self.values()), k=1)
+        return choice[0]
 
 class InferenceModule:
     """
