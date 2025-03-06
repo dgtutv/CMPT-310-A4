@@ -291,10 +291,16 @@ class ExactInference(InferenceModule):
         The update model is not entirely stationary: it may depend on Pacman's
         current position. However, this is not a problem, as Pacman's current
         position is known.
+        
+        P(ghostPosition | noisyDistance) = [P(noisyDistance | ghostPosition) * P(ghostPosition)] / P(noisyDistance)
+        self.beliefs = normalize( P(noisyDistance | ghostPosition) aka P(noisyDistance | ghostPosition, pacmanPosition) * priorBelief )
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        for ghostPos in self.allPositions:
+            prob = self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
+            self.beliefs[ghostPos] *= prob
         self.beliefs.normalize()
 
     def elapseTime(self, gameState):
