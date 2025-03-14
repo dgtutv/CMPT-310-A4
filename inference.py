@@ -387,6 +387,7 @@ class ParticleFilter(InferenceModule):
             self.initializeUniformly(gameState)
             return
         
+        
         # Resample particles
         newParticles = []
         for particle in self.particles:
