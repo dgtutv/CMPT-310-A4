@@ -18,6 +18,7 @@ import busters
 import game
 
 from util import manhattanDistance, raiseNotDefined
+import util
 
 
 class DiscreteDistribution(dict):
@@ -356,7 +357,7 @@ class ParticleFilter(InferenceModule):
                 self.particles.append(pos)
                 
         for i in range(remainder):
-            self.particles.append(self.util.choice(self.legalPositions))    # Distribute extras randomly
+            self.particles.append(random.choice(self.legalPositions))    # Distribute extras randomly
 
     def observeUpdate(self, observation, gameState):
         """
@@ -370,8 +371,28 @@ class ParticleFilter(InferenceModule):
         be reinitialized by calling initializeUniformly. The total method of
         the DiscreteDistribution may be useful.
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # Calculate particle weights
+        weights = {}
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        
+        for particle in self.particles:
+            weight = self.getObservationProb(observation, pacmanPos, particle, jailPos)
+            weights[particle] = weight
+            
+        newDist = DiscreteDistribution(weights)
+        
+        # Check for 0 weights
+        if newDist.total() == 0:
+            self.initializeUniformly(gameState)
+            return
+        
+        # Resample particles
+        newParticles = []
+        for particle in self.particles:
+            newParticles.append(newDist.sample())
+            
+        self.particles = newParticles
 
     def elapseTime(self, gameState):
         """
