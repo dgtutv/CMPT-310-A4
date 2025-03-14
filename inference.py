@@ -357,7 +357,7 @@ class ParticleFilter(InferenceModule):
                 self.particles.append(pos)
                 
         for i in range(remainder):
-            self.particles.append(random.choice(self.legalPositions))    # Distribute extras randomly
+            self.particles.append(self.legalPositions[i % numLegalPos])    # Distribute extras randomly
 
     def observeUpdate(self, observation, gameState):
         """
@@ -375,7 +375,6 @@ class ParticleFilter(InferenceModule):
         weights = {}
         pacmanPos = gameState.getPacmanPosition()
         jailPos = self.getJailPosition()
-        
         for particle in self.particles:
             weight = self.getObservationProb(observation, pacmanPos, particle, jailPos)
             weights[particle] = weight
@@ -390,7 +389,7 @@ class ParticleFilter(InferenceModule):
         
         # Resample particles
         newParticles = []
-        for particle in self.particles:
+        for i in range(self.numParticles):
             newParticles.append(newDist.sample())
             
         self.particles = newParticles
